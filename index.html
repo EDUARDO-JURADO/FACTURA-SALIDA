@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Guía de Control de Pesos / Salidas</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --primary: #0f766e;
+            --ink: #000;
+            --muted: #444;
+            --line: #999;
+            --radius: 8px;
+        }
+
+        html, body {
+            font-family: 'Inter', Arial, sans-serif;
+            background: #fff;
+            color: var(--ink);
+            font-size: 12px;
+            line-height: 1.35;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        body {
+            padding: 6mm;
+        }
+
+        .ticket {
+            width: 100%;
+            max-width: 190mm;
+            margin: 0 auto;
+            border: 1.5px solid #000;
+            border-radius: var(--radius);
+            overflow: hidden;
+            background: #fff;
+        }
+
+        /* ============ HEADER ============ */
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 12px;
+            border-bottom: 1.5px solid #000;
+            background: #fff;
+        }
+
+        .header-logo {
+            width: 52px;
+            height: 52px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            padding: 3px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header-logo img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .header-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .header-info h1 {
+            font-size: 14px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: .3px;
+            line-height: 1.15;
+        }
+
+        .header-info p {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .6px;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+
+        .header-info .guia-badge {
+            display: inline-block;
+            margin-top: 4px;
+            font-size: 11px;
+            font-weight: 800;
+            padding: 2px 8px;
+            border: 1.2px solid #000;
+            border-radius: 4px;
+        }
+
+        /* QR más grande */
+        .qr-box {
+            flex-shrink: 0;
+            text-align: center;
+        }
+
+        .qr-box img {
+            width: 105px;
+            height: 105px;
+            display: block;
+            border: 1.5px solid #000;
+            padding: 4px;
+            border-radius: 6px;
+        }
+
+        /* ============ META STRIP ============ */
+        .meta-strip {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            border-bottom: 1.5px solid #000;
+        }
+
+        .meta-card {
+            padding: 6px 10px;
+            border-right: 1px solid #ccc;
+        }
+
+        .meta-card:last-child {
+            border-right: none;
+        }
+
+        .meta-card .lbl {
+            font-size: 9px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: .6px;
+            color: var(--muted);
+        }
+
+        .meta-card .val {
+            font-size: 13px;
+            font-weight: 800;
+            margin-top: 1px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Sin color en consecutivo */
+        .meta-card.highlight {
+            background: #fff;
+        }
+
+        .meta-card.highlight .val {
+            color: #000;
+            font-size: 15px;
+        }
+
+        /* ============ BODY GRID ============ */
+        .body-grid {
+            display: grid;
+            grid-template-columns: 1.3fr 1fr;
+        }
+
+        .panel {
+            padding: 8px 12px;
+        }
+
+        .panel-left {
+            border-right: 1.5px solid #000;
+        }
+
+        .panel-title {
+            font-size: 9.5px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: .8px;
+            color: var(--primary);
+            margin-bottom: 6px;
+            padding-bottom: 3px;
+            border-bottom: 1px solid #ccc;
+        }
+
+        /* ============ FIELDS ============ */
+        .field {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            padding: 3px 0;
+            border-bottom: 1px dotted #bbb;
+            font-size: 11.5px;
+        }
+
+        .field:last-child {
+            border-bottom: none;
+        }
+
+        .field .k {
+            font-weight: 700;
+            color: var(--muted);
+            text-transform: uppercase;
+            font-size: 10px;
+            letter-spacing: .2px;
+            flex-shrink: 0;
+        }
+
+        .field .v {
+            font-weight: 700;
+            text-align: right;
+            word-break: break-word;
+        }
+
+        .field .v.big {
+            font-size: 13px;
+        }
+
+        /* ============ PESOS ============ */
+        .peso-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 10px;
+            margin-bottom: 4px;
+            border: 1px solid #000;
+            border-radius: 5px;
+            background: #fff;
+        }
+
+        .peso-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .peso-row .pl {
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: .4px;
+            color: #000;
+        }
+
+        .peso-row .pv {
+            font-size: 14px;
+            font-weight: 800;
+            color: #000;
+            display: flex;
+            align-items: baseline;
+            gap: 3px;
+        }
+
+        .peso-row .pv .unit {
+            font-size: 9px;
+            font-weight: 700;
+            color: var(--muted);
+        }
+
+        /* Neto: sin color, más grande y resaltado por tamaño */
+        .peso-row.neto {
+            background: #fff;
+            border: 1.6px solid #000;
+            padding: 9px 10px;
+        }
+
+        .peso-row.neto .pl {
+            color: #000;
+            font-size: 11px;
+        }
+
+        .peso-row.neto .pv {
+            color: #000;
+            font-size: 22px;
+            font-weight: 800;
+        }
+
+        .peso-row.neto .pv .unit {
+            color: #000;
+            font-size: 11px;
+        }
+
+        /* ============ DESCRIPCIÓN ============ */
+        .section-line {
+            border-top: 1.5px solid #000;
+            padding: 8px 12px;
+        }
+
+        .section-line .panel-title {
+            margin-bottom: 4px;
+        }
+
+        .descripcion {
+            font-size: 11.5px;
+            min-height: 26px;
+            padding: 4px 8px;
+            border: 1px dashed #999;
+            border-radius: 4px;
+        }
+
+        /* ============ CANTIDAD / BRIX ============ */
+        .extra-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            border-top: 1px solid #ccc;
+        }
+
+        .extra-chip {
+            padding: 6px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11.5px;
+        }
+
+        .extra-chip:first-child {
+            border-right: 1px solid #ccc;
+        }
+
+        .extra-chip .lbl {
+            font-size: 9.5px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: .4px;
+            color: var(--muted);
+        }
+
+        .extra-chip .val {
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        /* ============ FIRMAS ============ */
+        .firmas {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            padding: 10px 12px 12px;
+            border-top: 1.5px solid #000;
+        }
+
+        .firma {
+            text-align: center;
+        }
+
+        .firma .linea {
+            border-top: 1.2px solid #000;
+            margin-top: 32px;
+            padding-top: 4px;
+        }
+
+        .firma .rol {
+            font-size: 9px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+            color: var(--muted);
+        }
+
+        .firma .nombre {
+            font-size: 11px;
+            font-weight: 700;
+            margin-top: 1px;
+        }
+
+        /* ============ FOOTER ============ */
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 12px;
+            border-top: 1.5px solid #000;
+            font-size: 9.5px;
+            font-weight: 600;
+            color: var(--muted);
+            background: #f7f7f7;
+        }
+
+        .footer strong {
+            color: #000;
+        }
+
+        /* ============ PRINT ============ */
+        @page {
+            size: A4;
+            margin: 5mm;
+        }
+
+        @media print {
+            html, body {
+                background: #fff;
+                padding: 0;
+                font-size: 11px;
+            }
+
+            .ticket {
+                max-width: 100%;
+                border-radius: 0;
+                box-shadow: none;
+                page-break-inside: avoid;
+            }
+
+            .print-button {
+                display: none !important;
+            }
+        }
+
+        .print-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 999px;
+            padding: 12px 22px;
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 6px 18px rgba(15,118,110,.5);
+            z-index: 999;
+        }
+
+        @media (max-width: 640px) {
+            .body-grid { grid-template-columns: 1fr; }
+            .panel-left { border-right: none; border-bottom: 1.5px solid #000; }
+            .meta-strip { grid-template-columns: 1fr; }
+            .meta-card { border-right: none; border-bottom: 1px solid #ccc; }
+            .meta-card:last-child { border-bottom: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <button class="print-button" onclick="window.print()">🖨️ Imprimir</button>
+
+    <div class="ticket">
+
+        <!-- HEADER -->
+        <header class="header">
+            <div class="header-logo">
+                <img src="https://fundicionestorres.com/wp-content/uploads/2019/11/LogoCadasa-207X118-1.png" alt="CADASA">
+            </div>
+            <div class="header-info">
+                <h1>Central Azucarero de Alanje S.A.</h1>
+                <p>Departamento de Pesas · Guía de Control / Salidas</p>
+                <div class="guia-badge">Guía No. <span data-field="numero_guia">-</span></div>
+            </div>
+            <div class="qr-box">
+                <img id="qr" src="" alt="QR">
+            </div>
+        </header>
+
+        <!-- META STRIP (sin la palabra "Consecutivo") -->
+        <div class="meta-strip">
+            <div class="meta-card highlight">
+                <div class="val" data-field="consecutivo">-</div>
+            </div>
+            <div class="meta-card">
+                <div class="lbl">Día Zafra</div>
+                <div class="val" data-field="dia_zafra">-</div>
+            </div>
+            <div class="meta-card">
+                <div class="lbl">Fecha</div>
+                <div class="val" data-field="fecha">-</div>
+            </div>
+        </div>
+
+        <!-- BODY GRID -->
+        <div class="body-grid">
+
+            <div class="panel panel-left">
+                <div class="panel-title">Detalles del Despacho</div>
+
+                <div class="field">
+                    <span class="k">Producto</span>
+                    <span class="v big" data-field="producto">-</span>
+                </div>
+                <div class="field">
+                    <span class="k">Placa</span>
+                    <span class="v" data-field="placa">-</span>
+                </div>
+                <div class="field">
+                    <span class="k">Conductor</span>
+                    <span class="v" data-field="conductor">-</span>
+                </div>
+                <div class="field">
+                    <span class="k">Destino</span>
+                    <span class="v" data-field="destino">-</span>
+                </div>
+                <div class="field">
+                    <span class="k">Factura</span>
+                    <span class="v" data-field="factura">-</span>
+                </div>
+                <div class="field">
+                    <span class="k">Recibo</span>
+                    <span class="v" data-field="recibo">-</span>
+                </div>
+                <div class="field">
+                    <span class="k">H. Entrada</span>
+                    <span class="v" data-field="hora_entrada">-</span>
+                </div>
+                <div class="field">
+                    <span class="k">H. Salida</span>
+                    <span class="v" data-field="hora_salida">-</span>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-title">Pesos Registrados</div>
+
+                <div class="peso-row">
+                    <span class="pl">Bruto</span>
+                    <span class="pv"><span data-field="peso_bruto">-</span><span class="unit">Kg</span></span>
+                </div>
+                <div class="peso-row">
+                    <span class="pl">Tara</span>
+                    <span class="pv"><span data-field="tara">-</span><span class="unit">Kg</span></span>
+                </div>
+                <div class="peso-row neto">
+                    <span class="pl">Neto</span>
+                    <span class="pv"><span data-field="peso_neto">-</span><span class="unit">Kg</span></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- DESCRIPCIÓN -->
+        <div class="section-line">
+            <div class="panel-title">Descripción</div>
+            <div class="descripcion" data-field="descripcion">-</div>
+        </div>
+
+        <!-- CANTIDAD / BRIX -->
+        <div class="extra-row">
+            <div class="extra-chip">
+                <span class="lbl">Cantidad (Bultos)</span>
+                <span class="val" data-field="cantidad">-</span>
+            </div>
+            <div class="extra-chip">
+                <span class="lbl">Brix</span>
+                <span class="val" data-field="brix">-</span>
+            </div>
+        </div>
+
+        <!-- FIRMAS -->
+        <div class="firmas">
+            <div class="firma">
+                <div class="linea">
+                    <div class="rol">Entregado Por</div>
+                    <div class="nombre" data-field="entregado_por">-</div>
+                </div>
+            </div>
+            <div class="firma">
+                <div class="linea">
+                    <div class="rol">Recibido Por</div>
+                    <div class="nombre" data-field="recibido_por">-</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <footer class="footer">
+            <div>Pesador: <strong data-field="pesador">-</strong></div>
+            <div>Generado automáticamente · CADASA</div>
+        </footer>
+
+    </div>
+
+    <script>
+        function getParams() {
+            const p = {};
+            new URLSearchParams(window.location.search).forEach((v, k) => p[k] = v);
+            return p;
+        }
+
+        function fillData() {
+            const p = getParams();
+
+            document.querySelectorAll("[data-field]").forEach(el => {
+                const f = el.dataset.field;
+                if (p[f] !== undefined && p[f] !== "") {
+                    el.textContent = decodeURIComponent(p[f]);
+                } else {
+                    el.textContent = "-";
+                }
+            });
+
+            // QR con el CONSECUTIVO
+            const qr = document.getElementById("qr");
+            const qrData = p.consecutivo || p.numero_guia || "CADASA";
+            qr.src = "https://api.qrserver.com/v1/create-qr-code/?size=260x260&margin=0&data="
+                     + encodeURIComponent(qrData);
+        }
+
+        window.addEventListener('load', function () {
+            fillData();
+            setTimeout(() => window.print(), 700);
+        });
+    </script>
+</body>
+</html>
